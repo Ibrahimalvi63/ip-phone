@@ -1,4 +1,5 @@
 import './globals.css';
+import NavBar from '../components/nav-bar';
 
 export const metadata = {
   title: 'IP Phone',
@@ -13,6 +14,7 @@ export const viewport = {
   themeColor: '#0f0f0f',
 };
 
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -21,6 +23,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-bg-primary text-white font-sans h-full">
+        <NavBar />
         {children}
       </body>
     </html>
