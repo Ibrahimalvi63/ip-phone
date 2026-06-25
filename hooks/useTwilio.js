@@ -2,47 +2,38 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { addCallLog, findContactByNumber } from '../lib/storage';
+import { Device } from '@twilio/voice-sdk';
 
 export const CALL_STATE = {
-  IDLE:        'idle',
-  CONNECTING:  'connecting',
-  RINGING:     'ringing',
-  IN_CALL:     'in_call',
-  ENDED:       'ended',
-  ERROR:       'error',
+  IDLE: 'idle',
+  CONNECTING: 'connecting',
+  RINGING: 'ringing',
+  IN_CALL: 'in_call',
+  ENDED: 'ended',
+  ERROR: 'error',
 };
 
 export default function useTwilio(authToken) {
   const [deviceReady, setDeviceReady] = useState(false);
   const [deviceError, setDeviceError] = useState(null);
   const [callState, setCallState] = useState(CALL_STATE.IDLE);
-  const [activeCall, setActiveCall]  = useState(null);
-  const [isMuted, setIsMuted]        = useState(false);
-  const [isSpeaker, setIsSpeaker]    = useState(false);
+  const [activeCall, setActiveCall] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isSpeaker, setIsSpeaker] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [currentNumber, setCurrentNumber] = useState('');
-  const [incomingCall, setIncomingCall]   = useState(null);
+  const [incomingCall, setIncomingCall] = useState(null);
 
-  const deviceRef   = useRef(null);
-  const callRef     = useRef(null);
-  const timerRef    = useRef(null);
-  const callStart   = useRef(null);
+  const deviceRef = useRef(null);
+  const callRef = useRef(null);
+  const timerRef = useRef(null);
+  const callStart = useRef(null);
   const callLogData = useRef(null);
 
-  // Load Twilio.js SDK dynamically
   useEffect(() => {
-    if (typeof window === 'undefined' || !authToken) return;
-    if (window.Twilio?.Device) { initDevice(); return; }
-
-    const script = document.createElement('script');
-    script.src = 'https://sdk.twilio.com/js/client/v2.0/twilio.min.js';
-    script.async = true;
-    script.onload = () => initDevice();
-    script.onerror = () => setDeviceError('Failed to load Twilio SDK');
-    document.head.appendChild(script);
-
-    return () => { script.remove(); };
-  }, [authToken]);
+    if (!authToken) return
+    initDevice()
+  }, [authToken])
 
   const fetchToken = useCallback(async () => {
     const res = await fetch('/api/token', {
@@ -57,7 +48,6 @@ export default function useTwilio(authToken) {
   const initDevice = useCallback(async () => {
     try {
       const token = await fetchToken();
-      const Device = window.Twilio.Device;
 
       if (deviceRef.current) {
         deviceRef.current.destroy();
@@ -71,7 +61,22 @@ export default function useTwilio(authToken) {
         debug: false,
       });
 
+      device.on('registered', () => {
+        console.log('Twilio Registered');
+        setDeviceReady(true);
+        setDeviceError(null);
+      });
+
+      device.on('registering', () => {
+        console.log('Twilio Registering...');
+      });
+
+      device.on('unregistered', () => {
+        console.log('Twilio unregistered');
+      });
+
       device.on('ready', () => {
+        console.log('Device ready');
         setDeviceReady(true);
         setDeviceError(null);
       });
@@ -83,6 +88,7 @@ export default function useTwilio(authToken) {
       });
 
       device.on('connect', (conn) => {
+        console.log('Device connected');
         callRef.current = conn;
         setActiveCall(conn);
         setCallState(CALL_STATE.IN_CALL);
@@ -126,6 +132,12 @@ export default function useTwilio(authToken) {
   }, [fetchToken]);
 
   const attachCallHandlers = (conn) => {
+    console.log(conn);
+    console.log(typeof conn.on);
+    if (!conn || typeof conn.on !== 'function') {
+      console.error('Invalid connection object:', conn);
+      return;
+    }
     conn.on('mute', (muted) => setIsMuted(muted));
     conn.on('disconnect', () => handleDisconnect());
     conn.on('reject', () => handleDisconnect());
@@ -143,7 +155,7 @@ export default function useTwilio(authToken) {
     }
 
     setActiveCall(null);
-    callRef.current  = null;
+    callRef.current = null;
     callStart.current = null;
     setCallState(CALL_STATE.ENDED);
     setCallDuration(0);
@@ -154,7 +166,7 @@ export default function useTwilio(authToken) {
   };
 
   // ─── Actions ───────────────────────────────────────────────────────────────
-  const makeCall = useCallback((number) => {
+  const makeCall = useCallback(async (number) => {
     if (!deviceRef.current || !deviceReady) {
       setDeviceError('Device not ready');
       return;
@@ -174,8 +186,10 @@ export default function useTwilio(authToken) {
     };
 
     const params = { To: cleaned };
-    const conn = deviceRef.current.connect({ params });
-    if (conn) attachCallHandlers(conn);
+    const conn = await deviceRef.current.connect({ params });
+    if (conn) {
+      attachCallHandlers(conn);
+    }
   }, [deviceReady]);
 
   const hangUp = useCallback(() => {

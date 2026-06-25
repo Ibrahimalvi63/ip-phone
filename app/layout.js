@@ -3,7 +3,6 @@ import './globals.css';
 export const metadata = {
   title: 'IP Phone',
   description: 'Web-based dialer powered by Twilio',
-  themeColor: '#0f0f0f',
 };
 
 export const viewport = {
@@ -11,6 +10,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: '#0f0f0f',
 };
 
 export default function RootLayout({ children }) {
