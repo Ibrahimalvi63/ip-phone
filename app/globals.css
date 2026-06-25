@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background-color: #0f0f0f;
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  #__next { height: 100%; }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+}
+
+@layer components {
+  .key-btn {
+    @apply flex flex-col items-center justify-center rounded-2xl
+           bg-[#1e1e1e] border border-[#2a2a2a]
+           text-white select-none
+           transition-all duration-100 ease-out
+           active:scale-95 active:bg-[#2a2a2a];
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .key-btn:hover { background: #242424; border-color: #3a3a3a; }
+
+  .tab-btn {
+    @apply flex flex-col items-center gap-1 py-2 px-3
+           text-xs font-medium text-gray-500
+           transition-colors duration-150;
+  }
+
+  .tab-btn.active { @apply text-[#00ff88]; }
+
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1
+           rounded-full text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .card {
+    @apply bg-[#1e1e1e] border border-[#2a2a2a] rounded-2xl;
+  }
+
+  .input-field {
+    @apply w-full bg-[#242424] border border-[#2a2a2a] rounded-xl
+           px-3.5 py-3 text-sm text-white outline-none
+           transition-all duration-150
+           focus:border-[#00ff88] focus:ring-2 focus:ring-[rgba(0,255,136,0.15)]
+           placeholder:text-gray-600;
+  }
+
+  .btn-primary {
+    @apply flex items-center justify-center gap-2
+           bg-[#00ff88] text-black font-semibold
+           rounded-xl px-5 py-3 text-sm
+           transition-all duration-150
+           hover:opacity-90 active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply flex items-center justify-center gap-2
+           bg-[#1e1e1e] border border-[#2a2a2a] text-white font-medium
+           rounded-xl px-4 py-2.5 text-sm
+           transition-all duration-150
+           hover:bg-[#242424] active:scale-95;
+  }
+
+  .call-action-btn {
+    @apply flex flex-col items-center gap-2 p-4 rounded-2xl
+           transition-all duration-150 active:scale-95 select-none;
+    touch-action: manipulation;
+  }
+
+  .section-header {
+    @apply text-xs font-semibold text-gray-500 uppercase tracking-wider
+           px-4 pt-4 pb-2;
+  }
+}
+
+@layer utilities {
+  .glow-green { box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+  .glow-red   { box-shadow: 0 0 20px rgba(255,68,68,0.3); }
+}
