@@ -132,8 +132,6 @@ export default function useTwilio(authToken) {
   }, [fetchToken]);
 
   const attachCallHandlers = (conn) => {
-    console.log(conn);
-    console.log(typeof conn.on);
     if (!conn || typeof conn.on !== 'function') {
       console.error('Invalid connection object:', conn);
       return;

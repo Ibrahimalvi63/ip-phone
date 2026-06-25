@@ -4,6 +4,7 @@ import twilio from 'twilio';
 const { VoiceResponse } = twilio.twiml;
 
 export async function POST(request) {
+  console.log("voice webhook hit")
   const formData = await request.formData();
   const to   = formData.get('To')   || '';
   const from = process.env.TWILIO_CALLER_ID || '';
