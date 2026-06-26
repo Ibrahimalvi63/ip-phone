@@ -7,8 +7,8 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Credentials required' }, { status: 400 });
 
   const valid =
-    username === (process.env.DEMO_USERNAME || 'admin') &&
-    password === (process.env.DEMO_PASSWORD || 'changeme123');
+    username === (process.env.DEMO_USERNAME) &&
+    password === (process.env.DEMO_PASSWORD);
 
   if (!valid) {
     await new Promise(r => setTimeout(r, 400)); // prevent brute-force

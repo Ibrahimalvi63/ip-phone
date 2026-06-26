@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="bg-bg-primary text-white font-sans h-full">
+      <body className="bg-bg-primary text-white font-sans max-h-screen">
         <NavBar />
         {children}
       </body>
