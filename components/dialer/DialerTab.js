@@ -77,6 +77,11 @@ export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) 
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
+
+      <div className="flex items-center justify-between px-4 pt-4 pb-3 mb-10">
+        <h1 className="text-xl font-bold">Dialer</h1>
+      </div>
+
       {/* Number display */}
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-2">

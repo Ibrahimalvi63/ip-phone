@@ -1,9 +1,8 @@
 import './globals.css';
-import NavBar from '../components/nav-bar';
 
 export const metadata = {
-  title: 'IP Phone',
-  description: 'Web-based dialer powered by Twilio',
+  title: 'ILMA LINK',
+  description: 'Web-based IP phone dialer powered by Twilio',
 };
 
 export const viewport = {
@@ -23,7 +22,6 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="bg-bg-primary text-white font-sans max-h-screen">
-        <NavBar />
         {children}
       </body>
     </html>
