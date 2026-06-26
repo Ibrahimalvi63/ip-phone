@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { CALL_STATE } from '../../hooks/useTwilio';
-import { getSettings } from '../../lib/storage';
+import { getSettings, saveContact } from '../../lib/storage';
 import { COUNTRY_CODES, formatDuration } from '../../lib/utils';
 import ActiveCallOverlay from './ActiveCallOverlay';
 
@@ -12,7 +12,7 @@ const KEYS = [
   { digit: '*', sub: '' }, { digit: '0', sub: '+' }, { digit: '#', sub: '' },
 ];
 
-export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) {
+export default function DialerTab({ twilio, onContact, prefillNumber, onPrefillConsumed }) {
   const { callState, callDuration, currentNumber, makeCall, hangUp, sendDTMF,
     toggleMute, toggleSpeaker, isMuted, isSpeaker } = twilio;
 
@@ -78,8 +78,20 @@ export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
 
-      <div className="flex items-center justify-between px-4 pt-4 pb-3 mb-10">
-        <h1 className="text-xl font-bold">Dialer</h1>
+      <div className="px-4 pt-4 pb-3 mb-10">
+        <h1 className="text-xl font-bold mb-3">Dialer</h1>
+
+        {/* Call status if ended/error */}
+        {(callState === CALL_STATE.ENDED || callState === CALL_STATE.ERROR) && (
+          <div className="mx-6 mb-3">
+            <div className={`text-center py-2 rounded-xl text-sm font-medium ${callState === CALL_STATE.ENDED
+              ? 'bg-[rgba(0,255,136,0.08)] text-[#00ff88]'
+              : 'bg-[rgba(255,68,68,0.08)] text-red-400'
+              }`}>
+              {callState === CALL_STATE.ENDED ? 'Call ended' : 'Call failed'}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Number display */}
@@ -140,18 +152,6 @@ export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) 
         </div>
       </div>
 
-      {/* Call status if ended/error */}
-      {(callState === CALL_STATE.ENDED || callState === CALL_STATE.ERROR) && (
-        <div className="mx-6 mb-3">
-          <div className={`text-center py-2 rounded-xl text-sm font-medium ${callState === CALL_STATE.ENDED
-            ? 'bg-[rgba(0,255,136,0.08)] text-[#00ff88]'
-            : 'bg-[rgba(255,68,68,0.08)] text-red-400'
-            }`}>
-            {callState === CALL_STATE.ENDED ? 'Call ended' : 'Call failed'}
-          </div>
-        </div>
-      )}
-
       {/* Keypad */}
       <div className="flex-1 px-6 pb-4">
         <div className="grid grid-cols-3 gap-3 mb-5">
@@ -185,7 +185,7 @@ export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) 
 
           {/* Contacts quick-add */}
           {number && (
-            <button className="w-14 h-14 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors active:scale-95">
+            <button onClick={() => onContact(`${countryCode}${number}`)} className="w-14 h-14 rounded-full bg-[#1e1e1e] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors active:scale-95">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
                 <line x1="12" y1="14" x2="12" y2="20" /><line x1="9" y1="17" x2="15" y2="17" />
@@ -193,6 +193,7 @@ export default function DialerTab({ twilio, prefillNumber, onPrefillConsumed }) 
             </button>
           )}
           {!number && <div className="w-14" />}
+
         </div>
       </div>
     </div>

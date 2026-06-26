@@ -3,16 +3,34 @@ import { useState, useEffect } from 'react';
 import { getContacts, saveContact, deleteContact } from '../../lib/storage';
 import { getInitials, avatarColor } from '../../lib/utils';
 
-export default function ContactsTab({ onDial }) {
+export default function ContactsTab({ onDial, prefillContact, onPrefillConsumed }) {
   const [contacts, setContacts] = useState([]);
-  const [search, setSearch]     = useState('');
-  const [modal, setModal]       = useState(null); // null | 'add' | contact obj (edit)
-  const [form, setForm]         = useState({ name: '', phone: '', email: '', note: '' });
-  const [detail, setDetail]     = useState(null); // contact detail sheet
+  const [search, setSearch] = useState('');
+  const [modal, setModal] = useState(null); // null | 'add' | contact obj (edit)
+  const [form, setForm] = useState({ name: '', phone: '', email: '', note: '' });
+  const [detail, setDetail] = useState(null); // contact detail sheet
   const [formError, setFormError] = useState('');
 
   const refresh = () => setContacts(getContacts());
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  useEffect(() => {
+    if (!prefillContact) return;
+    if (prefillContact) {
+      setForm({
+        name: '',
+        phone: prefillContact,
+        email: '',
+        note: '',
+      });
+
+      setFormError('');
+      setModal('add');
+      onPrefillConsumed?.();
+    }
+  }, [prefillContact, onPrefillConsumed]);
 
   const openAdd = () => {
     setForm({ name: '', phone: '', email: '', note: '' });
@@ -64,7 +82,7 @@ export default function ContactsTab({ onDial }) {
           className="w-9 h-9 rounded-full bg-[rgba(0,255,136,0.12)] border border-[rgba(0,255,136,0.25)] flex items-center justify-center text-[#00ff88] active:scale-90 transition-all"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
           </svg>
         </button>
       </div>
@@ -73,7 +91,7 @@ export default function ContactsTab({ onDial }) {
       <div className="px-4 pb-3">
         <div className="relative">
           <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
             type="search"
@@ -90,8 +108,8 @@ export default function ContactsTab({ onDial }) {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-600">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
             </svg>
             <p className="text-sm">{search ? 'No results' : 'No contacts yet'}</p>
             {!search && (
@@ -122,7 +140,7 @@ export default function ContactsTab({ onDial }) {
                     className="w-9 h-9 rounded-full bg-[rgba(0,255,136,0.1)] border border-[rgba(0,255,136,0.2)] flex items-center justify-center text-[#00ff88] flex-shrink-0 active:scale-90 transition-all"
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+                      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" />
                     </svg>
                   </button>
                 </button>
@@ -147,11 +165,11 @@ export default function ContactsTab({ onDial }) {
             </div>
             <div className="grid grid-cols-2 gap-3 mb-4">
               <button onClick={() => { onDial(detail.phone); setDetail(null); }} className="btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" /></svg>
                 Call
               </button>
               <button onClick={() => openEdit(detail)} className="btn-ghost">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 Edit
               </button>
             </div>
@@ -179,7 +197,7 @@ export default function ContactsTab({ onDial }) {
               <h2 className="text-lg font-bold">{modal === 'add' ? 'New Contact' : 'Edit Contact'}</h2>
               <button onClick={() => setModal(null)} className="text-gray-500 hover:text-gray-300 transition-colors p-1">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
@@ -192,10 +210,10 @@ export default function ContactsTab({ onDial }) {
 
             <div className="space-y-3 mb-5">
               {[
-                { key: 'name',  label: 'Full Name *',     type: 'text',  placeholder: 'John Doe' },
-                { key: 'phone', label: 'Phone Number *',  type: 'tel',   placeholder: '+8801XXXXXXXXX' },
-                { key: 'email', label: 'Email (optional)',type: 'email',  placeholder: 'email@example.com' },
-                { key: 'note',  label: 'Note (optional)', type: 'text',  placeholder: 'Work colleague…' },
+                { key: 'name', label: 'Full Name *', type: 'text', placeholder: 'John Doe' },
+                { key: 'phone', label: 'Phone Number *', type: 'tel', placeholder: '+8801XXXXXXXXX' },
+                { key: 'email', label: 'Email (optional)', type: 'email', placeholder: 'email@example.com' },
+                { key: 'note', label: 'Note (optional)', type: 'text', placeholder: 'Work colleague…' },
               ].map(({ key, label, type, placeholder }) => (
                 <div key={key}>
                   <label className="block text-xs font-medium text-gray-400 mb-1.5">{label}</label>
