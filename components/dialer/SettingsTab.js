@@ -115,7 +115,7 @@ export default function SettingsTab({ username, onLogout, onReinitDevice }) {
       {/* About */}
       <Section title="About">
         <Row label="Version" value="1.0.1" icon={<InfoIcon />} />
-        <Row label="Powered by" value="Twilio WebRTC" icon={<PhoneIcon />} />
+        <Row label="Powered by" value="NextWeb BD" icon={<PhoneIcon />} />
         <Row label="Developer" value={"SM IBRAHIM"} icon={<UserIcon />} />
       </Section>
 
